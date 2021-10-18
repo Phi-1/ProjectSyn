@@ -1,16 +1,12 @@
-package dev.stormwatch.projectsyn.game;
+package dev.stormwatch.projectsyn.window;
 
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
-import org.lwjgl.system.*;
-
-import java.nio.*;
 
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 public class Window {
@@ -27,11 +23,13 @@ public class Window {
     private int width, height;
     private String title;
     private long glfwWindow;
+    private double tickrate;
 
     private Window() {
-        this.width = 1920;
-        this.height = 1080;
+        this.width = 960;
+        this.height = 540;
         this.title = "Project Syn";
+        this.tickrate = 0.05;
     }
 
     public void run() {
@@ -65,6 +63,12 @@ public class Window {
         glfwWindow = glfwCreateWindow(this.width, this.height, this.title, NULL, NULL);
         if (glfwWindow == NULL) { throw new IllegalStateException("Failed to create the GLFW window."); }
 
+        // Set mouse and keyboard callbacks
+        glfwSetKeyCallback(glfwWindow, KeyListener::keyCallback);
+        glfwSetCursorPosCallback(glfwWindow, MouseListener::mousePosCallback);
+        glfwSetMouseButtonCallback(glfwWindow, MouseListener::mouseButtonCallback);
+        glfwSetScrollCallback(glfwWindow, MouseListener::mouseScrollCallback);
+
         // Make the OpenGL context current
         glfwMakeContextCurrent(glfwWindow);
 
@@ -83,6 +87,7 @@ public class Window {
         double currentTime = 0;
         double lastTime = 0;
         double deltaTime = 0;
+        double lastTick = 0;
         int frames = 0;
         double timer = 0;
 
@@ -90,12 +95,20 @@ public class Window {
             currentTime = glfwGetTime();
             deltaTime = currentTime - lastTime;
             lastTime = currentTime;
+            lastTick += deltaTime;
             timer += deltaTime;
             frames++;
             if (timer >= 1) {
                 timer--;
                 System.out.println(frames);
                 frames = 0;
+            }
+
+            if (lastTick >= tickrate) {
+                lastTick -= tickrate;
+                System.out.println(MouseListener.getX() + ", " + MouseListener.getY());
+                if (KeyListener.isKeyPressed(GLFW_KEY_Y)) { System.out.println("Y"); }
+                MouseListener.endFrame();
             }
 
             glClear(GL_COLOR_BUFFER_BIT);

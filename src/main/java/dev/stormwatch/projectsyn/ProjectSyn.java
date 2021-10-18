@@ -1,6 +1,6 @@
 package dev.stormwatch.projectsyn;
 
-import dev.stormwatch.projectsyn.game.Window;
+import dev.stormwatch.projectsyn.window.Window;
 
 public class ProjectSyn {
 
