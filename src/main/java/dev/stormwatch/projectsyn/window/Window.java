@@ -1,5 +1,7 @@
 package dev.stormwatch.projectsyn.window;
 
+import dev.stormwatch.projectsyn.scene.Scene;
+import dev.stormwatch.projectsyn.scene.Scenes;
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
@@ -24,6 +26,7 @@ public class Window {
     private String title;
     private long glfwWindow;
     private double tickrate;
+    private Scene scene;
 
     private Window() {
         this.width = 960;
@@ -45,6 +48,16 @@ public class Window {
         // Terminate GLFW and free the error callback
         glfwTerminate();
         glfwSetErrorCallback(null).free();
+    }
+
+    public void changeScene(Scene scene, boolean shouldReset) {
+        this.scene = scene;
+        if (shouldReset) { this.scene.reset(); }
+        this.scene.init();
+    }
+
+    public void closeWindow() {
+        glfwSetWindowShouldClose(glfwWindow, true);
     }
 
     private void init() {
@@ -88,30 +101,26 @@ public class Window {
         double lastTime = 0;
         double deltaTime = 0;
         double lastTick = 0;
-        int frames = 0;
-        double timer = 0;
+
+        this.changeScene(Scenes.MAP, false);
 
         while(!glfwWindowShouldClose(glfwWindow)) {
             currentTime = glfwGetTime();
             deltaTime = currentTime - lastTime;
             lastTime = currentTime;
             lastTick += deltaTime;
-            timer += deltaTime;
-            frames++;
-            if (timer >= 1) {
-                timer--;
-                System.out.println(frames);
-                frames = 0;
-            }
 
             if (lastTick >= tickrate) {
                 lastTick -= tickrate;
-                System.out.println(MouseListener.getX() + ", " + MouseListener.getY());
-                if (KeyListener.isKeyPressed(GLFW_KEY_Y)) { System.out.println("Y"); }
+//                System.out.println(1 / deltaTime);
+
                 MouseListener.endFrame();
             }
 
             glClear(GL_COLOR_BUFFER_BIT);
+
+            this.scene.update((float) deltaTime);
+
             glfwSwapBuffers(glfwWindow);
             glfwPollEvents();
         }
