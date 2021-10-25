@@ -31,20 +31,20 @@ public abstract class Scene {
             "out vec4 FragColor;\n" +
             "\n" +
             "void main() {\n" +
-            "    FragColor = fColor;\n" +
+            "    FragColor = vec4(fColor.xyz, 2);\n" +
             "}";
 
     protected float[] vertexArray = {
-            // Position     // Color
-            -1f, 1f, 0f,     0.9f, 0.2f, 0.2f, 1.0f, // Top left
-            -0.1f, 1f, 0f,   0.5f, 0.0f, 0.1f, 1.0f, // Top right
-            -0.1f, 0f, 0f,   0.3f, 0.2f, 0.6f, 1.0f, // Bottom right
-            -1f, 0f, 0f,     0.3f, 0.2f, 0.6f, 1.0f, // Bottom left
+        // Position             // Color
+        0.5f, -0.5f, 0.0f,      0.9f, 0.2f, 0.2f, 1.0f, // Top left
+        -0.5f, 0.5f, 0.0f,      0.5f, 0.0f, 0.1f, 1.0f, // Top right
+        0.5f, 0.5f, 0.0f,       0.3f, 0.2f, 0.6f, 1.0f, // Bottom right
+        -0.5f, -0.5f, 0.0f,     0.3f, 0.2f, 0.6f, 1.0f, // Bottom left
     };
 
     protected int[] elementArray = {
         2, 1, 0,
-        3, 2, 0
+        0, 1, 3
     };
 
     protected int vertexShader, fragmentShader, shaderProgram;
@@ -128,7 +128,7 @@ public abstract class Scene {
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, elementBuffer, GL_STATIC_DRAW);
 
         int positionSize = 3;
-        int colorSize = 3;
+        int colorSize = 4;
         int vertexSizeBytes = (positionSize + colorSize) * Float.BYTES;
 
         glVertexAttribPointer(0, positionSize, GL_FLOAT, false, vertexSizeBytes, 0);
